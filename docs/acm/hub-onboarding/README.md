@@ -110,11 +110,11 @@ external:
       create: true
       name: grid-ca
     ca:
-      mode: Existing
-      secretName: grid-ca-key
+      mode: Generate
 ```
 
-The lab keeps its CA with mode Existing. A new grid uses mode Generate.
+This new grid generates its own CA. Keep `Generate` for the life of the hub;
+back up the CA and grid ID together.
 
 Nothing else to run. The root ApplicationSet picks up [apps/grid-bootstrap/application.yaml](../../../apps/grid-bootstrap/application.yaml), which installs the chart on the hub with these values. Change them by committing to this file.
 
