@@ -47,10 +47,10 @@ Grid operator is successfully scraping provider metrics.
 
 The provider console
 ([ai-grid-cloud/ai-grid-provider-console](https://github.com/ai-grid-cloud/ai-grid-provider-console))
-saves models and subscriptions as commits to a catalog repository,
-[ai-grid-cloud/ai-grid-shared-catalog](https://github.com/ai-grid-cloud/ai-grid-shared-catalog). That URL is the only
-value another environment changes: it appears in the two AppProjects and the three ApplicationSets in
-`hub/catalog-*`, and in the console's `apps/console/application.yaml`.
+saves models and subscriptions under `catalog/` in this lab's
+[GitOps fork](https://github.com/adamrdrew/grid-gitops-testing) on `master`.
+The fork URL and branch must match in the two AppProjects and three ApplicationSets in
+`hub/catalog-*` and in `apps/console/application.yaml`.
 
 The `catalog-*` files in `hub/` deliver it to AI Grid spokes by role (Placements in `apps/ai-grid-spokes`):
 
@@ -60,10 +60,11 @@ The `catalog-*` files in `hub/` deliver it to AI Grid spokes by role (Placements
 | `catalog/ingress/` | `acm-models-catalog-ingress` | `models-as-a-service` | Each `ingress` or `combined` spoke, once the folder exists |
 | `catalog/subscriptions/` | `acm-models-catalog-subscriptions` | `models-as-a-service` | Each `ingress` or `combined` spoke, once the folder exists |
 
-An empty catalog repository generates no Applications, so it shows no errors before the console's first write.
+Before the console's first write creates matching catalog directories, the catalog
+ApplicationSets generate no Applications.
 
-The console's token can push to the catalog, so the catalog's Applications run in two AppProjects that admit only
-that repository, no cluster-scoped kinds, and only the kinds the console writes:
+The console's token can push to this fork. The catalog's Applications run in two
+AppProjects that admit no cluster-scoped kinds and only the kinds the console writes:
 
 - `acm-models-catalog-models`: LLMInferenceService and NetworkPolicy.
 - `acm-models-catalog-maas`: ExternalModel, MaaSModelRef, MaaSSubscription and MaaSAuthPolicy.
@@ -77,7 +78,7 @@ names that Application.
 
 One Application owns each object. To hand a sample model to the catalog:
 
-1. Remove the model from this repository: its files under `apps/acm-models/<model>/` and `maas/externalmodels/`,
+1. Remove the sample deployment from `apps/acm-models/<model>/` and `maas/externalmodels/`,
    and its Placement and ApplicationSet under `hub/`.
 2. Wait for Argo CD to prune them. `acm-models-maas-<cluster>` deletes the ExternalModel and MaaSModelRef on each
    ingress spoke, and deleting the model's ApplicationSet deletes its Applications and their LLMInferenceService.
@@ -109,4 +110,6 @@ that each gateway serves. A catalog model can therefore report Ready before
 its gateway backend is configured; model readiness alone does not prove that
 requests through MaaS and the Grid gateway can reach it.
 
-Keep anything privileged out of the catalog repository: whoever holds the console's token can write it.
+This single-repository layout is for the lab. The console token can write to the
+same fork Argo CD uses for privileged deployment manifests; the catalog
+AppProjects do not limit edits to other paths in Git.

@@ -30,11 +30,11 @@ on the hub, installed from its Helm chart: one pod with kube-auth-proxy
   binds the backend to ACM's `global-search-user`, which lets it read every
   managed cluster's indexed resources: more than the GPU nodes it asks for, so
   the backend stays behind the console's sign-in (the file says why).
-- **Models and subscriptions:** commits to the catalog repository,
-  [ai-grid-cloud/ai-grid-shared-catalog](https://github.com/ai-grid-cloud/ai-grid-shared-catalog),
+- **Models and subscriptions:** commits under `catalog/` in this lab's
+  [GitOps fork](https://github.com/adamrdrew/grid-gitops-testing) on `master`,
   which `apps/acm-models` delivers and `apps/ai-grid-policies` reports on.
-  That URL is the one value another environment changes, here
-  (`backend.git.url`) and in `apps/acm-models/hub/catalog-*`.
+  The URL and branch must match here (`backend.git`) and in
+  `apps/acm-models/hub/catalog-*`.
 
 ## Before the first sync completes
 
@@ -46,8 +46,8 @@ CD has created the console's Route, a hub cluster-admin runs:
 AI_GRID_GIT_TOKEN_FILE=/path/to/token-file apps/console/create-secrets.sh
 ```
 
-`AI_GRID_GIT_TOKEN_FILE` is a file holding a fine-grained GitHub token with
-`contents: write` on the catalog repository and nothing else. The script
+`AI_GRID_GIT_TOKEN_FILE` is a file holding a GitHub token with
+`contents: write` on this lab fork. The script
 creates or updates, keeping existing values:
 
 - `ai-grid-provider-console-oauth` and OAuthClient `ai-grid-provider-console`:
@@ -93,10 +93,10 @@ ManagedClusters.
 
 ## Who can change what
 
-Anyone who holds the catalog token can change the models and subscriptions
-on every cluster, within the limits `apps/acm-models` sets. Never give that
-token access to this repository: Argo CD applies this repository with
-cluster-admin rights.
+Anyone who holds the catalog token can write to this lab fork, including its
+deployment manifests. Argo CD applies those manifests with cluster-admin
+rights. The catalog AppProjects limit what their Applications deploy, but do
+not restrict which files the token can change in Git.
 
 ## Keycloak restart behavior
 
