@@ -1,8 +1,9 @@
 # The catalog repository is written by the provider console's git writer
 # (ai-grid-cloud/ai-grid-provider-backend), with a token that can push to it.
-# So its Applications may deliver nothing else: only that repository as a
-# source, no cluster-scoped kinds, and only the kinds the writer commits, each
-# in its own namespace. Argo CD checks a resource's kind and namespace against
+# These catalog Applications may deliver no cluster-scoped kinds, only the
+# listed namespaced kinds. This lab uses the deployment fork for the catalog,
+# so the console token can also write to privileged GitOps manifests in that
+# fork. Argo CD checks a resource's kind and namespace against
 # a project separately, so models and MaaS objects get a project each: a model
 # (whose spec is a pod template) can't land in models-as-a-service next to
 # MaaS's Secrets, and a NetworkPolicy can't open MaaS's pods.
@@ -16,7 +17,7 @@ metadata:
 spec:
   description: Models from the catalog repository, written by the provider console
   sourceRepos:
-    - https://github.com/ai-grid-cloud/ai-grid-shared-catalog.git
+    - https://github.com/adamrdrew/grid-gitops-testing.git
   destinations:
     - server: "*"
       namespace: ai-grid-internal-models
@@ -35,7 +36,7 @@ metadata:
 spec:
   description: Models' MaaS entries and subscriptions from the catalog repository, written by the provider console
   sourceRepos:
-    - https://github.com/ai-grid-cloud/ai-grid-shared-catalog.git
+    - https://github.com/adamrdrew/grid-gitops-testing.git
   destinations:
     - server: "*"
       namespace: models-as-a-service

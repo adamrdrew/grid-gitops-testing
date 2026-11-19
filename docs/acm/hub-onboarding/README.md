@@ -156,8 +156,8 @@ Verify: an Application for each app in that list, plus dedicated-hub-root and th
 
 The console app installs the cloud provider's admin console on the hub, on both hub profiles ([apps/console](../../../apps/console/README.md)). Argo CD creates its namespace, Route and Deployment, but the pod doesn't start until three Secrets exist, and nobody can sign in until its OAuthClient exists. None of them is in git. Create them once per hub:
 
-1. Create the catalog token. Someone with write access to the catalog repository (`backend.git.url` in [apps/console/application.yaml](../../../apps/console/application.yaml), the same URL as in `apps/acm-models/hub/catalog-*`) creates a fine-grained GitHub personal access token: resource owner the repository's organization, repository access only that repository, and repository permission `Contents: Read and write`, nothing else. If the organization requires approval for fine-grained tokens, an organization owner approves it.
-2. Save the token in a file outside any git checkout, readable only by you (`chmod 600`). The console commits to the catalog with it, so anyone holding it can change models and subscriptions on every cluster. Never give it access to this repository.
+1. Use a GitHub token with `Contents: Read and write` on this lab fork, the repository at `backend.git.url` in [apps/console/application.yaml](../../../apps/console/application.yaml). The same fork and branch must be configured in `apps/acm-models/hub/catalog-*`. This single-repository setup gives the token write access to deployment manifests as well as catalog files; use it only for this lab.
+2. Save the token in a file outside any git checkout, readable only by you (`chmod 600`). Never put its value in Git.
 3. Wait until Argo CD has created the console's Route:
 
    ```bash
